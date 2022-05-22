@@ -16,7 +16,8 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 calls = {}
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins='*')
+app.config['SECRET_KEY'] = 'YARIK_NE_GEI'
+socketio = SocketIO(app, cors_allowed_origins='*', logger=True, engineio_logger=True)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -61,11 +62,12 @@ def image(data):
 
     # emit the frame back
     print(calls)
+    print(f'image from {user_id}')
     for user in calls.get(call_id, []):
         if user != user_id:
-            emit('image_back', stringData, room=user)
-        else:
-            emit('image_ok')
+            emit('image_back', stringData, broadcast=True, room=user)
+        # else:
+        #     emit('image_ok', room=user_id)
 
 
 @socketio.on('createCall')

@@ -1,5 +1,11 @@
 // var socket = io('http://127.0.0.1:5000/');
-var socket = io('https://ccc7-185-183-34-155.ngrok.io:5000/');
+// var socket = io('https://ccc7-185-183-34-155.ngrok.io:5000/');
+var socket = io({
+    'reconnection': false,
+    'reconnectionDelay': 1000000,
+    'reconnectionDelayMax' : 1000000,
+    'reconnectionAttempts': 100,
+});
 
 socket.on('connect', function () {
     console.log("Connected...!", socket.connected);
@@ -88,7 +94,7 @@ function openCvReady() {
         setInterval(() => {
             // cap.read(src);
 
-            var type = "image/png"
+            var type = "image/jpg"
             // var data = document.getElementById("canvasOutput").toDataURL(type);
             var frame = capture(webcamVideo, 1)
             var data = frame.toDataURL(type);
@@ -100,7 +106,7 @@ function openCvReady() {
             if (callId !== '') {
                 socket.emit(`image`, {'callId': callId, 'data': data});
             }
-        }, 5000 / FPS);
+        }, 10000 / FPS);
     };
 }
 
@@ -111,4 +117,7 @@ socket.on('image_back', function (image) {
     image_id.src = image;
 });
 socket.on('image_ok', function (image) {
+});
+socket.on('emotion', function (emotion) {
+    document.getElementById('emotion').innerHTML = emotion;
 });
